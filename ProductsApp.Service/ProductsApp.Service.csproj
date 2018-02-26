@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RestSharp.NetCore" Version="105.2.4-rc4-24214-01" />
+    <PackageReference Include="WindowsAzure.Storage" Version="8.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProductsApp.Dal\ProductsApp.Dal.csproj" />
+  </ItemGroup>
+
+</Project>

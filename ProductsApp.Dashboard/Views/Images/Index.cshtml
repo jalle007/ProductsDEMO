@@ -1,0 +1,151 @@
+@model List<ImagesViewModel>
+<h3>Search images </h3>
+<hr />
+
+<div id="sku-div" style="position:absolute;">
+  @using (Html.BeginForm("Index", "Images", FormMethod.Post, new { id = "frm2" })) {
+  <p>
+    <span style="font-weight: bold;">
+      @*Search :&nbsp;&nbsp;*@
+    </span>
+    <input id="sku1" name="sku1" value="" autocomplete="on" class="text-box single-line ui-autocomplete-input" type="text" style="margin-bottom:2px;">
+    <input type="submit" id="btSearch" value="Search" /><br />or&nbsp;
+    @{
+      var SKUs = (IEnumerable<SelectListItem>)ViewBag.SKUs;
+      @Html.DropDownList("sku", SKUs, new { onchange = "this.form.submit();" , style = "width: 132px;" })
+    }
+  </p>
+        }
+</div>
+
+@using (Html.BeginForm("DeleteSelected", "Images", new { model = Model }, FormMethod.Post)) {
+<table class="table vertical-align" style="width:75%">
+  <thead>
+    <tr>
+
+      <th style = "width: 250px;"></th>
+      <th>User</th>
+      <th>Platform</th>
+
+      <th>
+        <a href="#" id="divSelectAll">Select All</a><br />
+        <a href="#" id="divDeselect">Deselect</a>
+      </th>
+      <th>
+        <div class="form-actions no-color">
+          <input type="submit" value="Delete selected" class="btn btn-danger" />
+        </div>
+      </th>
+
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in Model) {
+      <tr>
+
+        <td>
+          <img src="@Html.DisplayFor(modelItem => item.Image.ImageUrl)" height="100" width="100" />
+          <br />
+          @Html.DisplayFor(modelItem => item.Image.Title)
+        </td>
+
+        <td>
+          <img src="@Html.DisplayFor(modelItem => item.Image.ProfileUrl)" height="100" width="100" />
+          <br />
+          @Html.DisplayFor(modelItem => item.Image.Username)
+        </td>
+
+        <td>
+          @Html.DisplayFor(modelItem => item.Image.Platform)
+        </td>
+
+        <td>
+          @Html.CheckBoxFor(modelItem => item.Checked, new { @class = "delete-checkbox" })
+          @Html.HiddenFor(modelItem => item.Image.Id)
+        </td>
+
+        <td>
+          @Html.ActionLink("Delete", "Delete", "Images", new { item.Image.Id }, null)
+        </td>
+
+      </tr>
+      }
+  </tbody>
+</table>
+  }
+<a asp-action="Index" asp-controller="Home">Back to List</a>
+
+@section scripts
+{
+  <script type="text/javascript">
+    $(document).ready(function () {
+      var top1 = $('#sku-div').position().top;
+      $('#sku-div').animate({ "top": top1 + 0 }, 0);
+
+
+      $("#divSelectAll").click(function () {
+        $(".delete-checkbox").prop('checked', true);
+      });
+      $("#divDeselect").click(function () {
+        $(".delete-checkbox").prop('checked', false);
+      });
+
+    })
+  </script>
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <style>
+    .ui-autocomplete {
+      max-height: 100px;
+      overflow-y: auto;
+      /* prevent horizontal scrollbar */
+      overflow-x: hidden;
+    }
+  </style>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $("#btSearch").click(function () {
+        console.log(ui.item.value);
+
+        $.ajax({
+          url: "/Images/Index",
+          type: "POST",
+          dataType: "json",
+          data: { sku: ui.item.value },
+          success: function (data) {
+
+          }
+        })
+      });
+
+      $("#sku1").autocomplete({
+        autoFocus: true,
+        minLength: 2,
+        select: function (event, ui) {
+          console.log(ui.item.value);
+        },
+        source: function (request, response) {
+          $.ajax({
+            url: "/Images/Autocomplete",
+            type: "POST",
+            dataType: "json",
+            data: { Prefix: request.term },
+            success: function (data) {
+              response($.map(data, function (item) {
+                console.log(item);
+                return { label: item.text, value: item.value };
+              }))
+
+            }
+          })
+        },
+        messages: {
+          noResults: "", results: ""
+        }
+      });
+    })
+  </script>
+
+}

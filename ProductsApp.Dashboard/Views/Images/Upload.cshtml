@@ -1,0 +1,166 @@
+@model ProductsApp.Service.Models.ImageItemResponse
+<h3>Upload product image</h3>
+<hr />
+
+<form asp-action="Upload"
+      asp-controller="Images"
+      method="post"
+      enctype="multipart/form-data">
+
+    <div class="form-horizontal">
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+      <input type="hidden" asp-for="Id" />
+
+      <div class="form-group">
+        <label asp-for="DeviceType" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+          <select asp-for="DeviceType" asp-items="Html.GetEnumSelectList<ProductsApp.Dal.Entity.DeviceType>()" >
+          </select>
+          <span asp-validation-for="DeviceType" class="text-danger"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label asp-for="Platform" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+          <select asp-for="Platform" asp-items="Html.GetEnumSelectList<ProductsApp.Dal.Entity.Platform>()">
+          </select>
+          <span asp-validation-for="Platform" class="text-danger"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label asp-for="Sku" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+          <div id="sku-div">
+            <input id="sku1" name="sku1" value="" autocomplete="on" class="text-box single-line ui-autocomplete-input" type="text">
+            @*<input type="submit" id="btSearch" value="Search" />*@
+            <br />or&nbsp;
+            <p>
+              @{
+                var SKUs = (IEnumerable<SelectListItem>)ViewBag.SKUs;
+                @Html.DropDownList("sku", SKUs, new { onchange = "this.form.submit();", style = "width: 132px;" })
+              }
+            </p>
+          </div>
+         @* <input asp-for="Sku" class="form-control" />*@
+          <span asp-validation-for="Sku" class="text-danger"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label asp-for="Title" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+          <input asp-for="Title" class="form-control" />
+          <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+      </div>
+
+
+      <div class="form-group">
+        <label asp-for="UserId" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+          <input asp-for="UserId" class="form-control" type="number" />
+          <span asp-validation-for="UserId" class="text-danger"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label asp-for="Username" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+          <input asp-for="Username" class="form-control" />
+          <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label asp-for="ProfileUrl" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+          <input asp-for="ProfileUrl" class="form-control" />
+          <span asp-validation-for="ProfileUrl" class="text-danger"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-md-2 control-label">Image</label>
+        <div class="col-md-10">
+          @*<input asp-for="ImageUrl" class="form-control" />*@
+          <input type="file" name="files" multiple />
+          <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+          <input type="submit" value="Save" class="btn btn-info" />
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div>
+    <a asp-action="Index" asp-controller="Home">Back to List</a>
+  </div>
+
+  @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $("#DeviceType").val(999);
+        $("#Platform").val(2);
+      })
+    </script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<style>
+  .ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+  }
+</style>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $("#btSearch").click(function () {
+      console.log(ui.item.value);
+
+      $.ajax({
+        url: "/Images/Index",
+        type: "POST",
+        dataType: "json",
+        data: { sku: ui.item.value },
+        success: function (data) {
+
+        }
+      })
+    });
+
+    $("#sku1").autocomplete({
+      autoFocus: true,
+      minLength: 2,
+      select: function (event, ui) {
+        console.log(ui.item.value);
+      },
+      source: function (request, response) {
+        $.ajax({
+          url: "/Images/Autocomplete",
+          type: "POST",
+          dataType: "json",
+          data: { Prefix: request.term },
+          success: function (data) {
+            response($.map(data, function (item) {
+              return { label: item.text, value: item.value };
+            }))
+
+          }
+        })
+      },
+      messages: {
+        noResults: "", results: ""
+      }
+    });
+  })
+</script>
+
+  }
