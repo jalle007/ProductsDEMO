@@ -65,7 +65,7 @@ namespace ProductsApp.WebApi
             // Enable middleware to serve swagger-ui (HTML, JS, CSS etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.ShowRequestHeaders();
+                //c.ShowRequestHeaders();
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProductsApp OnFeet API");
             });
 
